@@ -1,4 +1,3 @@
-import base
 import users
 from google.appengine.ext import db
 
@@ -7,14 +6,14 @@ class BlogEntry(db.Model):
 	content = db.TextProperty(required = True)
 	created = db.DateTimeProperty(auto_now_add = True)
 
-class MainHandler(base.Handler):	
+class MainHandler(users.Handler):	
 	def render_front(self):
 		entries = db.GqlQuery("select * from BlogEntry order by created desc")
 		self.render("main.html", entries=entries)
 	def get(self):
 		self.render_front();
 	
-class NewPostHandler(base.Handler):	
+class NewPostHandler(users.Handler):	
 	def render_front(self, subject="", content="", error=""):
 		self.render("newpost.html", subject=subject, content=content, error=error)
 	def get(self):
@@ -31,7 +30,7 @@ class NewPostHandler(base.Handler):
 			error = "We need both subject and artwork"
 			self.render_front(subject, content, error);
 
-class SinglePostHandler(base.Handler):
+class SinglePostHandler(users.Handler):
 	def get(self, id):
 		entries = BlogEntry.get_by_id(int(id))
 		entries = [entries]

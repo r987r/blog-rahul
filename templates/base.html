@@ -16,7 +16,13 @@
              width: 60px;
           }>
           <li class=nav><a href="/">main</a></li>
-          <li class=nav>{{user_string}}</li>
+          <li class=nav>
+            {% if user_in %}
+              {{user_in}} <a href="/logout">logout</a>
+            {% else %}
+              <a href="/login">login</a>
+            {% endif %}
+          </li>
         </ul>
 
        <div id="content">{% block content %}{% endblock %}</div>
