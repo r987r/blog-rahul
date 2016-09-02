@@ -1,21 +1,16 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-	<head>
-		<title>main</title>
-	</head>
+{% block title %}Main Blog Page{% endblock %}
 
-	<body>
-	</body>
-
-	<hr>
-	
-	{% for entry in entries %}
-		<div class ="entry">
-			<div class = "entry-title">{{entry.subject}}</div>
-			<div class = "entry-date">{{entry.created}}</div>
-			<pre class = "entry-body">{{entry.content}}</pre>
-		</div>
-	{% endfor %}
-	</hr>
-</html>
+{% block content %}    
+    <h2>Main Blog Page</h2>
+    <hr>
+      {% for entry in entries %}
+        <div class ="entry">
+          <div class = "entry-title">{{entry.subject}}</div>
+          <div class = "entry-date">{{entry.created}}</div>
+          <pre class = "entry-body">{{entry.content}}</pre>
+        </div>
+      {% endfor %}
+    </hr>
+{% endblock %}
