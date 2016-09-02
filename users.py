@@ -1,7 +1,13 @@
 import base
 import webapp2
+import re
+import hashlib
+import random
+import string
 
 from google.appengine.ext import db
+
+hash_seed = "vumb;gtink2;rahul;twenty"
 
 def valid_regex(regex, value):
     return re.compile(regex).match(value)	
@@ -17,11 +23,11 @@ def make_salt():
 
 def make_pw_hash(name, pw):
     salt = make_salt()
-    h = hashlib.sha256(name + pw + salt).hexdigest()
+    h = hashlib.sha256(hash_seed + name + pw + salt).hexdigest()
     return h, salt
 
 def valid_pw(name, pw, salt, check_hash):
-    if(hashlib.sha256(name + pw + salt).hexdigest() == check_hash):
+    if(hashlib.sha256(hash_seed + name + pw + salt).hexdigest() == check_hash):
         return True
     else:
         return False
