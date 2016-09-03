@@ -18,11 +18,12 @@
           <li class=nav><a href="/">main</a></li>
           <li class=nav>
             {% if user_in %}
-              {{user_in}} <a href="/logout">logout</a>
+              <li class=nav><a href="/newpost">new post</a></li>
+              <li class=nav>welcome {{user_in}} <a href="/logout">logout</a></li>
             {% else %}
-              <a href="/login">login</a>
+              <li class=nav><a href="/signup">sign up</a></li>
+              <li class=nav><a href="/login">login</a></li>
             {% endif %}
-          </li>
         </ul>
 
        <div id="content">{% block content %}{% endblock %}</div>

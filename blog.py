@@ -2,9 +2,17 @@ import users
 from google.appengine.ext import db
 
 class BlogEntry(db.Model):
-	subject = db.StringProperty(required = True)
-	content = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
+    username = db.ReferenceProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    likes = db.ListProperty(db.Key)
+    comments = db.ListProperty(db.Key)
+
+class Comment(db.Model):
+    comment = db.TextProperty(required = True)
+    username = db.ReferenceProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
 
 class MainHandler(users.Handler):	
 	def render_front(self):
