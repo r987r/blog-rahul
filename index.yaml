@@ -21,3 +21,9 @@ indexes:
   - name: id
   - name: created
     direction: desc
+
+- kind: BlogEntry
+  properties:
+  - name: username
+  - name: created
+    direction: desc

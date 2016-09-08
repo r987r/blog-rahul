@@ -9,6 +9,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/logout', handler=users.LogoutHandler, name='logout'),
     webapp2.Route(r'/welcome', handler=users.WelcomeHandler, name='welcomehandler'),
     webapp2.Route(r'/newpost', handler=blog.NewPostHandler, name='newpost'),
-    webapp2.Route(r'/<id:\d+>', handler=blog.SinglePostHandler, name='singlepost'),
+    webapp2.Route(r'/#\?.+', handler=blog.MainHandler, name='querymain'),
 
 ], debug=True)

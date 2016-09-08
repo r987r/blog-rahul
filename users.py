@@ -136,7 +136,7 @@ class LoginHandler(Handler):
 
 class LogoutHandler(Handler):
     def get(self):
-	self.redirect("/")
+	self.redirect("/signup")
 	self.response.headers.add_header('Set-Cookie', str('username=; Path=/'))
 
 			
