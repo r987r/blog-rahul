@@ -2,78 +2,87 @@
 import users
 from google.appengine.ext import db
 
-class BlogEntry(db.Model):
+class BlogPost(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     username = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
+    comments = db.IntegerProperty(default = 0)
     likes = db.ListProperty(db.Key)
     
     @classmethod
-    def entries_all(cls): 
+    def blogPosts_all(cls): 
         return cls.all()
 
     @classmethod
-    def entries_by_username(cls, username): 
+    def blogPosts_by_username(cls, username): 
         return cls.all().filter('username =', username)
     
     @classmethod
-    def entry_by_id(cls, uid):
+    def blogPost_by_id(cls, uid):
         return cls.get_by_id(int(uid))
     #@classmethod
-    #def changeLike(cls, blogEntry):
+    #def changeLike(cls, blogPost):
 
-    #@classmethod
-    #def getLikes(cls, blogEntry):
+    def getLikes(self):
+        return len(self.likes)
+
+    def addComment(self, comment):
+        self.comments += 1
+        self.put()
     
-    #@classmethod
-    #def addComment(cls, comment):
-
-    #@classmethod
-    #def getComments(cls, blogEntry):
+    def getComments(self):
+        return Comment.comments_by_blogPost(self.key());
  
 
 class Comment(db.Model):
-    blogEntry = db.ReferenceProperty(BlogEntry, required = True)
+    blogPost = db.ReferenceProperty(BlogPost, required = True)
     comment = db.TextProperty(required = True)
     username = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     
     @classmethod
-    def entries_by_blogEntry(cls, blogEntry): 
-        return cls.all().filter('blogEntry =', blogEntry)
+    def comments_by_blogPost(cls, blogEntry): 
+        return cls.all().filter('blogPost =', blogEntry)
     
 
 class MainHandler(users.Handler):	
 	def get(self):
-                entries = BlogEntry.entries_all()
-                self.render("main.html", entries=entries)
+                blogPosts = BlogPost.blogPosts_all()
+                self.render("main.html", blogPosts=blogPosts)
 
 class UserHandler(users.Handler):	
 	def get(self, u):
-                entries = BlogEntry.entries_by_username(u) 
-                self.render("main.html", entries=entries)
+                blogPosts = BlogPost.blogPosts_by_username(u)
+                if blogPosts.get(): 
+                    self.render("userposts.html", blogPosts=blogPosts, username=u)
+                else:
+                    self.redirect("/")
 
 class OnePostHandler(users.Handler):	
         def get(self, uid):
-            entry = BlogEntry.entry_by_id(uid)
-            comments = Comment.entries_by_blogEntry(entry.key());
-            self.render("onepost.html", entry=entry, comments=comments)
+            blogPost = BlogPost.blogPost_by_id(uid)
+            if blogPost:
+                comments = blogPost.getComments();
+                self.render("onepost.html", blogPost=blogPost, comments=comments)
+            else:
+                self.redirect("/")
 	
         def post(self, uid):
 		comment = self.request.get("sub_comment")
-                entry = BlogEntry.entry_by_id(uid)
-                blogKey = entry.key()
+                blogPost = BlogPost.blogPost_by_id(uid)
+                blogKey = blogPost.key()
 		if not self.user:
                         error = "You must sign in"
-			self.render("onepost.html", entry=entry, error=error);
+			self.render("onepost.html", blogPost=blogPost, error=error);
                 elif comment:
-			a = Comment(blogEntry = blogKey, comment = comment, username = self.user.username)
+			a = Comment(blogPost = blogKey, comment = comment, username = self.user.username)
 			a.put()
+                        blogPost.addComment(a)
 			self.redirect("/uid/" + str(uid))
 		else:
 			error = "We need a valid comment!"
-			self.render("onepost.html", entry=entry, error=error);
+			self.render("onepost.html", blogPost=blogPost, error=error);
 	
 class NewPostHandler(users.Handler):	
 	def render_front(self, subject="", content="", error=""):
@@ -88,7 +97,7 @@ class NewPostHandler(users.Handler):
 		content = self.request.get("content")
 		
 		if subject and content:
-			a = BlogEntry(subject = subject, content = content, username = self.user.username)
+			a = BlogPost(subject = subject, content = content, username = self.user.username)
 			a.put()
 			self.redirect("/uid/" + str(a.key().id()))
 		else:

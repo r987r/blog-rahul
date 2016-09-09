@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Main Blog Page{% endblock %}
+{% block title %}{{username}}'s Blog{% endblock %}
 
 {% block content %}    
-    <h2>Main Blog Page</h2>
+    <h2>{{username}}'s Blog</h2>
       {% for blogPost in blogPosts %}
          {% include 'post.html' %}
       {% endfor %}
