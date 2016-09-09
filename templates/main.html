@@ -4,15 +4,7 @@
 
 {% block content %}    
     <h2>Main Blog Page</h2>
-    <hr>
       {% for entry in entries %}
-        <div class ="post-heading">
-          <div class = "post-title"><a href="/?uid={{entry.key().id()}}">{{entry.subject}}</a></div>
-          <div class = "post-author">by: <a href="/?u={{entry.username}}">{{entry.username}}</a></div>
-          <div class = "post-content">{{entry.content | safe}}</div>
-          <div class = "post-date">{{entry.created.strftime("%b %d, %Y %H:%M")}}</div>
-          <br>
-	</div>
+         {% include 'post.html' %}
       {% endfor %}
-    </hr>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Single Post{% endblock %}
+
+{% block content %}    
+    <h2>Single Post</h2>
+    {% include 'post.html' %}
+      {% for comment in comments %}
+      <div class = "post-author">by: <a href="/u/{{comment.username}}">{{comment.username}}</a></div>
+      <div class = "post-content">{{comment.comment | safe}}</div>
+      <div class = "post-date">{{comment.created.strftime("%b %d, %Y %H:%M")}}</div>
+      {% endfor %}
+    <form method="post">
+      <label>
+      <div>add comment</div>
+          <textarea name="sub_comment"></textarea>
+      </label>
+      <div class="error">{{error}}</div>
+    <input type="submit">
+{% endblock %}
+

@@ -1,3 +1,4 @@
+
 import users
 from google.appengine.ext import db
 
@@ -7,7 +8,6 @@ class BlogEntry(db.Model):
     username = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     likes = db.ListProperty(db.Key)
-    comments = db.ListProperty(db.Key)
     
     @classmethod
     def entries_all(cls): 
@@ -36,20 +36,44 @@ class BlogEntry(db.Model):
 class Comment(db.Model):
     blogEntry = db.ReferenceProperty(BlogEntry, required = True)
     comment = db.TextProperty(required = True)
-    user = db.ReferenceProperty(users.User, required = True)
+    username = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
+    
+    @classmethod
+    def entries_by_blogEntry(cls, blogEntry): 
+        return cls.all().filter('blogEntry =', blogEntry)
+    
 
 class MainHandler(users.Handler):	
 	def get(self):
-		u = self.request.get("u")
-	        uid = self.request.get("uid")
-                if(u):
-                    entries = BlogEntry.entries_by_username(u) 
-                elif(uid):
-                    entries = [ BlogEntry.entry_by_id(uid) ]
-                else:
-                    entries = BlogEntry.entries_all()
+                entries = BlogEntry.entries_all()
                 self.render("main.html", entries=entries)
+
+class UserHandler(users.Handler):	
+	def get(self, u):
+                entries = BlogEntry.entries_by_username(u) 
+                self.render("main.html", entries=entries)
+
+class OnePostHandler(users.Handler):	
+        def get(self, uid):
+            entry = BlogEntry.entry_by_id(uid)
+            comments = Comment.entries_by_blogEntry(entry.key());
+            self.render("onepost.html", entry=entry, comments=comments)
+	
+        def post(self, uid):
+		comment = self.request.get("sub_comment")
+                entry = BlogEntry.entry_by_id(uid)
+                blogKey = entry.key()
+		if not self.user:
+                        error = "You must sign in"
+			self.render("onepost.html", entry=entry, error=error);
+                elif comment:
+			a = Comment(blogEntry = blogKey, comment = comment, username = self.user.username)
+			a.put()
+			self.redirect("/uid/" + str(uid))
+		else:
+			error = "We need a valid comment!"
+			self.render("onepost.html", entry=entry, error=error);
 	
 class NewPostHandler(users.Handler):	
 	def render_front(self, subject="", content="", error=""):
@@ -66,7 +90,7 @@ class NewPostHandler(users.Handler):
 		if subject and content:
 			a = BlogEntry(subject = subject, content = content, username = self.user.username)
 			a.put()
-			self.redirect("/?uid=" + str(a.key().id()))
+			self.redirect("/uid/" + str(a.key().id()))
 		else:
 			error = "We need both subject and artwork"
 			self.render_front(subject, content, error);

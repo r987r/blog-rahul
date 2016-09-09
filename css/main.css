@@ -75,8 +75,14 @@ input[type=submit] {
     font-weight: bold;
 }
 
+.post-comment {
+    float: left;    
+    left: 0px;
+    bottom: 0px;
+}
+
 .post-date {
-    position: absolute;
+    float: right;    
     right: 0px;
     bottom: 0px;
     color: #999;
