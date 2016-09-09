@@ -143,7 +143,7 @@ class LogoutHandler(Handler):
 class WelcomeHandler(Handler):	
     def get(self):
 	if(self.user):
-	    self.render("thanks.html", username=self.user.username)
+	    self.render("welcome.html", username=self.user.username)
 	else:
 	    self.redirect("/signup")
 	

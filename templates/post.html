@@ -3,9 +3,9 @@
       <div class = "post-title"><a href="/uid/{{blogPost.key().id()}}">{{blogPost.subject}}</a></div>
       <div class = "post-author">by: <a href="/u/{{blogPost.username}}">{{blogPost.username}}</a></div>
       <div class = "post-content">{{blogPost.content | safe}}</div>
-      <div class = "post-comments">{{blogPost.comments}} comments {{blogPost.getLikes()}} likes</div>
       <div class = "post-date">{{blogPost.created.strftime("%b %d, %Y %H:%M")}}</div>
-      <div id = "post_extension">{% block post_extension %}{% endblock %}</div>
+      {% set likeString = blogPost.getLikeString(user_in) %}
+      <div class = "post-comments">{{blogPost.comments}} comments {{blogPost.getLikes()}} likes {{likeString|safe}}</div>
       <br>
     </div>
 </hr>

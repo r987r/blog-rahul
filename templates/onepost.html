@@ -6,16 +6,23 @@
     <h2>Single Post</h2>
     {% include 'post.html' %}
       {% for comment in comments %}
+      <div class = "post-date">{{comment.created.strftime("%b %d, %Y %H:%M")}}</div>
       <div class = "post-author">by: <a href="/u/{{comment.username}}">{{comment.username}}</a></div>
       <div class = "post-content">{{comment.comment | safe}}</div>
-      <div class = "post-date">{{comment.created.strftime("%b %d, %Y %H:%M")}}</div>
       {% endfor %}
+    
+    <br>
+    <label>
+    {% if user_in %}
     <form method="post">
-      <label>
       <div>add comment</div>
           <textarea name="sub_comment"></textarea>
       </label>
       <div class="error">{{error}}</div>
     <input type="submit">
+    {% else %}
+      <div><a href="/login">Log In</a> to comment</div>
+      </label>
+    {% endif %}
 {% endblock %}
 

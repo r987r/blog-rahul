@@ -8,7 +8,7 @@ class BlogPost(db.Model):
     username = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     comments = db.IntegerProperty(default = 0)
-    likes = db.ListProperty(db.Key)
+    likes = db.ListProperty(str)
     
     @classmethod
     def blogPosts_all(cls): 
@@ -21,8 +21,31 @@ class BlogPost(db.Model):
     @classmethod
     def blogPost_by_id(cls, uid):
         return cls.get_by_id(int(uid))
-    #@classmethod
-    #def changeLike(cls, blogPost):
+    
+    def hasLiked(self, username):
+        return username in self.likes
+    
+    def likePost(self, username):
+        if(self.hasLiked(username)):
+            return False
+        self.likes.append(username)
+        self.put()
+        return True
+    
+    def unLikePost(self, username):
+        if(not self.hasLiked(username)):
+            return False
+        self.likes.remove(username)
+        self.put()
+        return True
+
+    def getLikeString(self, username):
+        if(not username or username==self.username):
+            return ""
+        elif(self.hasLiked(username)):
+            return '<a href="/uid/' + str(self.key().id()) + '/like">unlike</a>'
+        else:
+            return '<a href="/uid/' + str(self.key().id()) + '/like">like</a>'
 
     def getLikes(self):
         return len(self.likes)
@@ -45,7 +68,6 @@ class Comment(db.Model):
     def comments_by_blogPost(cls, blogEntry): 
         return cls.all().filter('blogPost =', blogEntry)
     
-
 class MainHandler(users.Handler):	
 	def get(self):
                 blogPosts = BlogPost.blogPosts_all()
@@ -58,6 +80,18 @@ class UserHandler(users.Handler):
                     self.render("userposts.html", blogPosts=blogPosts, username=u)
                 else:
                     self.redirect("/")
+
+class LikeHandler(users.Handler):
+    def get(self, uid):
+            blogPost = BlogPost.blogPost_by_id(uid)
+            if(not self.user or blogPost.username == self.user.username):
+                self.render("invalidlike.html");
+            else:
+                if(blogPost.hasLiked(self.user.username)):
+                    blogPost.unLikePost(self.user.username)
+                else:
+                    blogPost.likePost(self.user.username)
+                self.redirect(self.request.referer)
 
 class OnePostHandler(users.Handler):	
         def get(self, uid):
@@ -72,10 +106,7 @@ class OnePostHandler(users.Handler):
 		comment = self.request.get("sub_comment")
                 blogPost = BlogPost.blogPost_by_id(uid)
                 blogKey = blogPost.key()
-		if not self.user:
-                        error = "You must sign in"
-			self.render("onepost.html", blogPost=blogPost, error=error);
-                elif comment:
+                if comment:
 			a = Comment(blogPost = blogKey, comment = comment, username = self.user.username)
 			a.put()
                         blogPost.addComment(a)
@@ -101,6 +132,6 @@ class NewPostHandler(users.Handler):
 			a.put()
 			self.redirect("/uid/" + str(a.key().id()))
 		else:
-			error = "We need both subject and artwork"
+			error = "We need both subject and content"
 			self.render_front(subject, content, error);
 
