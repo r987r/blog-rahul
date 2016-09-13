@@ -80,6 +80,20 @@ class Comment(db.Model):
     def comments_by_blogPost(cls, blogEntry): 
         return cls.all().filter('blogPost =', blogEntry)
     
+    @classmethod
+    def comment_by_id(cls, uid):
+        return cls.get_by_id(int(uid))
+    
+    @classmethod
+    def deleteComment(cls, uid): 
+        comment = cls.comment_by_id(uid)
+        comment.blogPost.comments -= 1
+        comment.delete()
+        comment.blogPost.put()
+    
+    def isMyComment(self, username):
+        return username == self.username
+    
 class MainHandler(users.Handler):	
     def get(self):
         blogPosts = BlogPost.blogPosts_all()
@@ -188,8 +202,41 @@ class DeletePostHandler(users.Handler):
     
     def post(self, uid):
         cancel = self.request.POST.get("cancel_item", None)	
-        if(cancel):
+        if cancel:
             self.redirect(self.getReferer())
         else:
             BlogPost.deleteBlogPost(uid)
             self.redirect("/")
+
+class CommentHandler(users.Handler):
+    def get(self, uid):
+        users.Handler.get(self)
+        comment = Comment.comment_by_id(uid)
+        if comment and comment.isMyComment(self.user.username):
+            self.render("editcomment.html", sub_comment = comment.comment)
+        else:
+            self.render("errorhandler.html", error="Invalid Comment Edit Detected");
+    
+    def post(self, uid):
+        cancel = self.request.POST.get("cancel_item", None)	
+        delete = self.request.POST.get("delete_item", None)	
+        success = True
+        if cancel:
+            pass
+        elif delete:
+            Comment.deleteComment(uid)
+        else:
+            sub_comment = self.request.get("sub_comment")
+            if sub_comment:
+                comment = Comment.comment_by_id(uid)
+                comment.comment = sub_comment
+                comment.modified = datetime.datetime.now()
+	        comment.put()
+            else:
+	        error = "We need a valid comment!"
+                success = False
+        if success:
+            self.redirect(self.getReferer())
+        else:
+            self.render("editcomment.html", error=error);
+

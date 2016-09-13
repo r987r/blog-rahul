@@ -9,6 +9,9 @@
       <div class = "post-date">{{comment.created.strftime("%b %d, %Y %H:%M")}}</div>
       <div class = "post-author">by: <a href="/u/{{comment.username}}">{{comment.username}}</a></div>
       <div class = "post-content">{{comment.comment | safe}}</div>
+      {% if comment.isMyComment(user_in) %}
+      <div class = "post-edit"><a href="/comment/{{comment.key().id()}}/edit">Edit/Delete Comment</a></div>
+      {% endif %}
       {% endfor %}
     <br>
     <label>

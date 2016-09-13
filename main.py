@@ -4,6 +4,7 @@ import blog
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/u/<u:\w+>', handler=blog.UserHandler, name='usermain'),
+    webapp2.Route(r'/comment/<uid:\d+>/edit', handler=blog.CommentHandler, name='commenthandler'),
     webapp2.Route(r'/uid/<uid:\d+>/edit', handler=blog.EditPostHandler, name='edithandler'),
     webapp2.Route(r'/uid/<uid:\d+>/delete', handler=blog.DeletePostHandler, name='deletehandler'),
     webapp2.Route(r'/uid/<uid:\d+>/like', handler=blog.LikeHandler, name='likehandler'),
