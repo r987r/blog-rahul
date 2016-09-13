@@ -45,15 +45,15 @@ def check_credentials(username, password):
     	return user.pw_hash
 
 def valid_username_cookie(username):
-	#DB lookup here for user
-	username = username.split('|')
-	if(not len(username)==2):
-            return None
-	user = lookup_user(username[0])
-	if(user and user.pw_hash == username[1]):
-	    return user
-        else:
-            return None
+    #DB lookup here for user
+    username = username.split('|')
+    if(not len(username)==2):
+        return None
+    user = lookup_user(username[0])
+    if(user and user.pw_hash == username[1]):
+	return user
+    else:
+        return None
 	
 class User(db.Model):
 	username = db.StringProperty(required = True)
@@ -78,6 +78,12 @@ class Handler(webapp2.RequestHandler):
             webapp2.RequestHandler.initialize(self, *a, **kw)
 	    username = self.request.cookies.get('username','0|0')
             self.user = valid_username_cookie(username);	
+	
+        def get(self):
+	    self.response.headers.add_header('Set-Cookie', str('referer=%s; Path=/' % self.request.referer))
+
+        def getReferer(self):
+            return str(self.request.cookies.get('referer','/'))
 
 class SignUpHandler(Handler):	
 	def get(self):

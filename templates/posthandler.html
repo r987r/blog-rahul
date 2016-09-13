@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}newpost{% endblock %}
+{% block title %}post{% endblock %}
 
 {% block content %}    
-    <h2>newpost</h2>
+    <h2>post</h2>
 
     <form method="post">
       <label>
@@ -15,6 +15,7 @@
           <textarea name="content">{{content}}</textarea>
       </label>
       <div class="error">{{error}}</div>
-      <input type="submit">
+      <input type="submit" name="submit_item" value="submit">
+      <input type="submit" name="cancel_item" value="cancel">
     </form>
 {% endblock %}

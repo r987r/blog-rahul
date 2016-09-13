@@ -6,7 +6,10 @@
       <div class = "post-date">{{blogPost.created.strftime("%b %d, %Y %H:%M")}}</div>
       {% set likeString = blogPost.getLikeString(user_in) %}
       <div class = "post-comments">{{blogPost.comments}} comments {{blogPost.getLikes()}} likes {{likeString|safe}}</div>
-      <br>
+      {% if blogPost.isMyPost(user_in) %}
+      <div class = "post-edit"><a href="/uid/{{blogPost.key().id()}}/edit">Edit Post</a></div>
+      <div class = "post-delete"><a href="/uid/{{blogPost.key().id()}}/delete">Delete Post</a></div>
+      {% endif %}
     </div>
 </hr>
 
