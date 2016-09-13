@@ -13,11 +13,11 @@ class BlogPost(db.Model):
     
     @classmethod
     def blogPosts_all(cls): 
-        return cls.all()
+        return cls.all().order('-created')
 
     @classmethod
     def blogPosts_by_username(cls, username): 
-        return cls.all().filter('username =', username)
+        return cls.all().filter('username =', username).order('-created')
     
     @classmethod
     def blogPost_by_id(cls, uid):
@@ -78,7 +78,7 @@ class Comment(db.Model):
     
     @classmethod
     def comments_by_blogPost(cls, blogEntry): 
-        return cls.all().filter('blogPost =', blogEntry)
+        return cls.all().filter('blogPost =', blogEntry).order('-created')
     
     @classmethod
     def comment_by_id(cls, uid):
