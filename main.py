@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.insert(0, sys.path[0] + '/models')
-
+sys.path.insert(0, sys.path[1] + '/handlers')
 
 import webapp2
 from google.appengine.ext import db

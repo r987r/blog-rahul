@@ -1,8 +1,8 @@
 import jinja2
 import webapp2
 import re
-from handler import Handler
 from account import User
+from handler import Handler
 from google.appengine.ext import db
 
 
