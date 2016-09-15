@@ -3,7 +3,6 @@ import sys
 from handler import Handler
 from blogPost import BlogPost
 from comment import Comment
-import users
 import datetime
 
 from google.appengine.ext import db
