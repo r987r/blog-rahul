@@ -1,6 +1,13 @@
+import os
+import sys
+sys.path.insert(0, sys.path[0] + '/models')
+
+
 import webapp2
+from google.appengine.ext import db
 import users
 import blog
+
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/u/<u:\w+>', handler=blog.UserHandler, name='usermain'),

@@ -1,6 +1,7 @@
 from blogPost import BlogPost
 from google.appengine.ext import db
 
+
 class Comment(db.Model):
     blogPost = db.ReferenceProperty(BlogPost, required=True)
     comment = db.TextProperty(required=True)
@@ -25,4 +26,3 @@ class Comment(db.Model):
 
     def isMyComment(self, username):
         return username == self.username
-

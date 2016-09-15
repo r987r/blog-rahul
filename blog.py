@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, sys.path[0]+'/models')
 
+from handler import Handler
 from blogPost import BlogPost
 from comment import Comment
 import users
@@ -8,14 +8,15 @@ import datetime
 
 from google.appengine.ext import db
 
-class MainHandler(users.Handler):
+
+class MainHandler(Handler):
 
     def get(self):
         blogPosts = BlogPost.blogPosts_all()
         self.render("main.html", blogPosts=blogPosts)
 
 
-class UserHandler(users.Handler):
+class UserHandler(Handler):
 
     def get(self, u):
         blogPosts = BlogPost.blogPosts_by_username(u)
@@ -25,7 +26,7 @@ class UserHandler(users.Handler):
             self.redirect("/")
 
 
-class OnePostHandler(users.Handler):
+class OnePostHandler(Handler):
 
     def get(self, uid):
         blogPost = BlogPost.blogPost_by_id(uid)
@@ -52,10 +53,10 @@ class OnePostHandler(users.Handler):
             self.render("onepost.html", blogPost=blogPost, error=error)
 
 
-class LikeHandler(users.Handler):
+class LikeHandler(Handler):
 
     def get(self, uid):
-        users.Handler.get(self)
+        Handler.get(self)
         blogPost = BlogPost.blogPost_by_id(uid)
         if(not self.user or blogPost.isMyPost(self.user.username)):
             self.render("errorhandler.html", "Invalid Like detected")
@@ -67,10 +68,10 @@ class LikeHandler(users.Handler):
             self.redirect(self.getReferer())
 
 
-class PostHandler(users.Handler):
+class PostHandler(Handler):
 
     def get(self):
-        users.Handler.get(self)
+        Handler.get(self)
 
     def render_front(self, subject="", content="", error=""):
         self.render(
@@ -132,10 +133,10 @@ class EditPostHandler(PostHandler):
             self.redirect("/uid/" + str(uid))
 
 
-class DeletePostHandler(users.Handler):
+class DeletePostHandler(Handler):
 
     def get(self, uid):
-        users.Handler.get(self)
+        Handler.get(self)
         blogPost = BlogPost.blogPost_by_id(uid)
         if blogPost and blogPost.isMyPost(self.user.username):
             self.render("deletepost.html")
@@ -151,10 +152,10 @@ class DeletePostHandler(users.Handler):
             self.redirect("/")
 
 
-class CommentHandler(users.Handler):
+class CommentHandler(Handler):
 
     def get(self, uid):
-        users.Handler.get(self)
+        Handler.get(self)
         comment = Comment.comment_by_id(uid)
         if comment and comment.isMyComment(self.user.username):
             self.render("editcomment.html", sub_comment=comment.comment)

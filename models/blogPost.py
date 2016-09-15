@@ -1,5 +1,6 @@
 from google.appengine.ext import db
 
+
 class BlogPost(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
@@ -64,4 +65,3 @@ class BlogPost(db.Model):
     def addComment(self):
         self.comments += 1
         self.put()
-
