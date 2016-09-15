@@ -1,6 +1,5 @@
 from google.appengine.ext import db
 
-
 class BlogPost(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
@@ -15,6 +14,11 @@ class BlogPost(db.Model):
         return cls.all().order('-created')
 
     @classmethod
+    def deleteBlogPost(cls, uid):
+        blogPost = cls.blogPost_by_id(uid)
+        blogPost.delete()
+
+    @classmethod
     def blogPosts_by_username(cls, username):
         return cls.all().filter('username =', username).order('-created')
 
@@ -22,13 +26,6 @@ class BlogPost(db.Model):
     def blogPost_by_id(cls, uid):
         return cls.get_by_id(int(uid))
 
-    @classmethod
-    def deleteBlogPost(cls, uid):
-        blogPost = cls.blogPost_by_id(uid)
-        comments = blogPost.getComments()
-        for comment in comments:
-            comment.delete()
-        blogPost.delete()
 
     def isMyPost(self, username):
         return username == self.username
