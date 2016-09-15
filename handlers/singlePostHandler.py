@@ -16,7 +16,9 @@ class SinglePostHandler(Handler):
         comment = self.request.get("sub_comment")
         blogPost = BlogPost.blogPost_by_id(uid)
         blogKey = blogPost.key()
-        if comment:
+        if(not self.user):
+            self.redirect("/login")
+        elif comment:
             a = Comment(
                 blogPost=blogKey,
                 comment=comment,

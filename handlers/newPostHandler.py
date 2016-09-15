@@ -5,13 +5,15 @@ class NewPostHandler(PostHandler):
 
     def get(self):
         PostHandler.get(self)
-        if(self.user):
+        if self.user:
             self.render_front()
         else:
             self.redirect("/login")
 
     def post(self):
-        if self.valid_post():
+        if not self.user:
+            self.redirect("/login")
+        elif self.valid_post():
             a = BlogPost(
                 subject=self.subject,
                 content=self.content,
